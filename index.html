@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modern Single Page • Internal CSS</title>
+
+  <style>
+    /* ========= CSS VARIABLES (THEME) ========= */
+    :root{
+      --bg: #0f172a;           /* slate-900 */
+      --bg-elev: #111827;      /* gray-900 */
+      --card: #0b1220;         /* deep slate */
+      --text: #e5e7eb;         /* gray-200 */
+      --muted: #9ca3af;        /* gray-400 */
+      --brand: #22d3ee;        /* cyan-400 */
+      --brand-2: #a78bfa;      /* violet-400 */
+      --accent: #34d399;       /* emerald-400 */
+      --ring: rgba(34,211,238,.4);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --maxw: 1120px;
+    }
+
+    /* ========= GLOBAL RESET & BASE ========= */
+    *{ box-sizing: border-box; }
+    html, body{
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(34,211,238,.10), transparent 55%),
+        radial-gradient(1000px 600px at 90% 10%, rgba(167,139,250,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.6;
+    }
+    img{ max-width: 100%; display: block; }
+
+    .container{ width: min(92vw, var(--maxw)); margin: 0 auto; }
+
+    /* ========= NAVBAR ========= */
+    .nav{
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: saturate(160%) blur(10px);
+      background: linear-gradient(to bottom, rgba(15,23,42,.85), rgba(15,23,42,.60));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav__row{
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; gap: 14px;
+    }
+    .brand{
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; letter-spacing: .2px;
+    }
+    .brand__logo{
+      width: 34px; height: 34px; border-radius: 8px;
+      background: conic-gradient(from 210deg, var(--brand), var(--brand-2), var(--accent), var(--brand));
+      box-shadow: 0 6px 18px rgba(34,211,238,.45);
+    }
+    .nav__links{ display: flex; gap: 18px; }
+    .nav__links a{
+      color: var(--muted); text-decoration: none; font-weight: 600;
+      padding: 8px 12px; border-radius: 999px; transition: .2s ease;
+    }
+    .nav__links a:hover{ color: var(--text); background: rgba(255,255,255,.06); }
+
+    .btn{
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.1);
+      background: linear-gradient(135deg, rgba(34,211,238,.15), rgba(167,139,250,.15));
+      color: var(--text); font-weight: 700; text-decoration: none; transition: .25s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25) inset;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: var(--shadow); }
+
+    /* ========= HERO ========= */
+    .hero{ padding: 72px 0 32px; }
+    .hero__inner{
+      display: grid; gap: 22px;
+      grid-template-columns: 1.2fr .8fr;
+      align-items: center;
+    }
+    .badge{
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: 999px; font-size: .86rem; color: var(--muted);
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+    }
+    .title{
+      font-size: clamp(2rem, 3.2vw + 1rem, 3.2rem);
+      line-height: 1.15; margin: 8px 0 4px; font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .title .grad{
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .subtitle{ color: var(--muted); font-size: 1.05rem; max-width: 58ch; }
+    .hero__actions{ display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .btn--ghost{ background: transparent; border-color: rgba(255,255,255,.18); }
+    .hero__card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow);
+    }
+    .progress{
+      height: 10px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden;
+      margin-top: 10px; position: relative;
+    }
+    .progress__bar{
+      width: 72%; height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      box-shadow: 0 0 24px var(--ring);
+    }
+    .hero__meta{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    .stat{
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm); padding: 12px; text-align: center;
+    }
+    .stat b{ font-size: 1.1rem; }
+
+    /* ========= FEATURES (CARDS GRID) ========= */
+    .section{ padding: 42px 0; }
+    .section h2{ margin: 0 0 14px; font-size: 1.8rem; }
+    .muted{ color: var(--muted); }
+
+    .grid{
+      display: grid; gap: 18px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      padding: 18px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card:hover{ transform: translateY(-4px); box-shadow: var(--shadow); border-color: rgba(255,255,255,.2); }
+    .icon{
+      width: 42px; height: 42px; border-radius: 10px; display: inline-grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 8px 20px rgba(34,211,238,.35);
+      color:#0b1220; font-weight: 900;
+    }
+
+    /* ========= CTA STRIP ========= */
+    .cta{
+      margin-top: 24px;
+      background:
+        linear-gradient(120deg, rgba(34,211,238,.15), rgba(167,139,250,.12)),
+        linear-gradient(0deg, rgba(255,255,255,.05), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: grid; gap: 12px; align-items: center;
+      grid-template-columns: 1fr auto;
+    }
+
+    /* ========= CONTACT ========= */
+    .contact{
+      display: grid; gap: 18px; grid-template-columns: 1fr 1fr;
+    }
+    .panel{
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    }
+    label{ display:block; font-weight: 600; margin: 10px 0 6px; }
+    input, textarea{
+      width: 100%; padding: 12px 14px; color: var(--text);
+      background: #0b1220; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px; outline: none; transition: .2s;
+    }
+    input:focus, textarea:focus{
+      border-color: var(--brand); box-shadow: 0 0 0 4px var(--ring);
+    }
+    textarea{ resize: vertical; min-height: 120px; }
+
+    /* ========= FOOTER ========= */
+    .footer{
+      margin-top: 40px; padding: 28px 0; color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,.08);
+      text-align: center;
+    }
+
+    /* ========= MEDIA QUERIES ========= */
+    @media (max-width: 1000px){
+      .hero__inner{ grid-template-columns: 1fr; }
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+      .contact{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px){
+      .nav__links{ display: none; } /* simple mobile collapse */
+      .grid{ grid-template-columns: 1fr; }
+      .cta{ grid-template-columns: 1fr; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="container nav__row">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span>Nova UI</span>
+      </div>
+      <div class="nav__links">
+        #featuresFeatures</a>
+        #contactContact</a>
+        #get-startedGet Started →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero__inner">
+      <div>
+        <span class="badge">✨ Clean UI • Internal CSS only</span>
+        <h1 class="title">Build faster with a <span class="grad">polished</span> starter page.</h1>
+        <p class="subtitle">
+          A single lightweight HTML file with modern design: sticky nav, responsive grid, elegant cards,
+          smooth focus rings, and a friendly contact form. Copy, tweak, and ship.
+        </p>
+        <div class="hero__actions">
+          #featuresExplore Features</a>
+          #contactContact Us</a>
+        </div>
+      </div>
+
+      <aside class="hero__card" aria-label="Learning progress">
+        <h3 style="margin:0 0 6px;">Your Progress</h3>
+        <p class="muted" style="margin:0;">UI Polish • 72% complete</p>
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72">
+          <div class="progress__bar"></div>
+        </div>
+
+        <div class="hero__meta">
+          <div class="stat"><b>~7 KB</b><div class="muted">CSS only</div></div>
+          <div class="stat"><b>100%</b><div class="muted">Responsive</div></div>
+          <div class="stat"><b>0 deps</b><div class="muted">No libraries</div></div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section id="features" class="section">
+    <div class="container">
+      <h2>Features that feel premium</h2>
+      <p class="muted" style="margin-bottom:16px;">Thoughtful defaults you can copy into any project.</p>
+
+      <div class="grid">
+        <article class="card">
+          <div class="icon">①</div>
+          <h3>Responsive Grid</h3>
+          <p class="muted">Auto-fit layout that scales from mobile to desktop using modern CSS grid & flex utilities.</p>
+        </article>
+
+        <article class="card">
+          <div class="icon">②</div>
+          <h3>Beautiful Cards</h3>
+          <p class="muted">Soft gradients, subtle borders, and hover elevation add depth without heavy frameworks.</p>
+        </article>
+
+        <article class="card">
+          <div class="icon">③</div>
+          <h3>Accessible Focus</h3>
+          <p class="muted">Clear focus rings and semantic HTML help keyboard and assistive tech users.</p>
+        </article>
+
+        <article class="card">
+          <div class="icon">④</div>
+          <h3>Sticky Navigation</h3>
+          <p class="muted">A glassy top bar stays visible while scrolling for quick access to sections.</p>
+        </article>
+
+        <article class="card">
+          <div class="icon">⑤</div>
+          <h3>Nice Buttons</h3>
+          <p class="muted">Rounded chips with gradient accents, subtle borders, and soft hover motion.</p>
+        </article>
+
+        <article class="card">
+          <div class="icon">⑥</div>
+          <h3>Easy to Customize</h3>
+          <p class="muted">Swap the theme via CSS variables: colors, radius, shadows, and spacing.</p>
+        </article>
+      </div>
+
+      <div id="get-started" class="cta" aria-label="Call to action">
+        <div>
+          <h3 style="margin:0 0 4px;">Ready to get started?</h3>
+          <p class="muted" style="margin:0;">Use this as a landing page or a portfolio starter. It’s all yours.</p>
+        </div>
+        #contactSay Hello</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container contact">
+      <div class="panel">
+        <h2>Contact Us</h2>
+        <p class="muted" style="margin-top:-6px;">We usually respond within one business day.</p>
+        <form onsubmit="alert('Thanks! This demo does not submit anywhere.'); return false;">
+          <label for="name">Name</label>
+          <input id="name" name="name" placeholder="Your full name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="name@example.com" required />
+
+          <label for="msg">Message</label>
+          <textarea id="msg" name="message" placeholder="Write your message..."></textarea>
+
+          <div style="margin-top:14px;">
+            <button class="btn" type="submit">Send Message</button>
+            #Learn More</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Why this UI works</h2>
+        <ul class="muted">
+          <li>Balanced contrast and readable system fonts.</li>
+          <li>Whitespace + large headings improve scanning.</li>
+          <li>Consistent radius, borders, and shadows for cohesion.</li>
+          <li>Focus states & semantic tags improve accessibility.</li>
+          <li>Minimal JS; layout powered by CSS Grid/Flex only.</li>
+        </ul>
+        <hr style="border: none; border-top:1px solid rgba(255,255,255,.1); margin:18px 0;">
+        <p class="muted">Tip: Adjust theme colors in the <code>:root</code> variables to instantly rebrand.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      © <span id="year"></span> Nova UI. Built with ♥ using internal CSS.
+    </div>
+  </footer>
+
+  <script>
+    // Small enhancement: show current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
